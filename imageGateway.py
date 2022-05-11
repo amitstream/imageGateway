@@ -29,16 +29,17 @@ def processFile(f,url):
   grayscale_image=convert_grayscale(img_array)
   final_image=flatten_784(grayscale_image)
   print("Final image",final_image)
+  #st.title("Checking")
   prediction=get_prediction_data(final_image,url)
   print("\n\nData prediction",prediction)
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
   print("\n\nPredicted label", predicted_label)
-  st.title("Data AI says:"+str(predicted_label))
+  st.title("AI says:"+str(predicted_label))
 
-  payload = base64.b64encode(bytesData)
-  response = get_prediction_img(payload)
-  print("\n\nResponse is:",response)
-  st.title("IMAGE AI says:"+response)
+  #payload = base64.b64encode(bytesData)
+  #response = get_prediction_img(payload)
+  #print("\n\nResponse is:",response)
+  #st.title("IMAGE AI says:"+response)
 
 def convert_grayscale(im):
   # Convert to grayscale if its a color image
@@ -77,7 +78,7 @@ def flatten_784(grayscale_image):
       e=e+1
   return d
 
-urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c286'
+urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
 st.title("Image AI for Gateway")
 url=st.text_input("URL",urlDefault)
 uploadedFile=st.file_uploader("Choose file")
