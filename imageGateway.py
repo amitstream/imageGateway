@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-version=" v 2.0"
 
 def generate_column_names(resolution):
     column_names = []
@@ -16,49 +15,22 @@ def generate_column_names(resolution):
     return column_names
  
 def convert_json(final_image):
+  #print("\n\nStart convert_json\n",final_image)
   new_df = pd.DataFrame(data=final_image,columns=generate_column_names(28))
+  pd.set_option("display.max_rows", None, "display.max_columns", None)
+  #print("\n\nMID convert_json\n",new_df)
   json_file = new_df.to_dict('records')
-  return json_file
-
-def get_prediction_img(image_data):
-  url = 'https://askai.aiclub.world/39a4f3a3-e637-4981-a88c-b2597ab12be0'
-  r = requests.post(url, data=image_data)
-  response = r.json()['predicted_label']
-  print("Image AI predicts:",response)
-  return response
-
-def get_prediction_data(data,url):
-#  url = 'https://d3yowc8vr7.execute-api.us-east-1.amazonaws.com/Predict/13d5ab46-b369-4c84-966e-41a0c3ed83d1'
-#  url = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
-  r = requests.post(url, data=json.dumps(data))
-  response = getattr(r,'_content').decode("utf-8")
-  print("Data AI predicts:",response)
-  return response
-
-def processFile(f,url):
-  print("Got file upload")
-  bytesData=f.getvalue()
-  st.image(f)
-  image=Image.open(f)
-  img_array=np.array(image)
-  grayscale_image=convert_grayscale(img_array)
-  final_image=flatten_784(grayscale_image)
-  json_data=convert_json(final_image)
-  print("JSON data",json_data)
-  #st.title("Checking")
-  prediction=get_prediction_data(json_data[0],url)
-  print("\n\nData prediction",prediction)
-  st.text("Response:"+str(prediction))
-  predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
-  print("\n\nPredicted label", predicted_label)
-  st.title("AI says:"+str(predicted_label))
-
-  #payload = base64.b64encode(bytesData)
-  #response = get_prediction_img(payload)
-  #print("\n\nResponse is:",response)
-  #st.title("IMAGE AI says:"+response)
+  myJson=json_file[0]
+  #print("\n\nMID2 convert_json\n",myJson)
+  for k in myJson:
+    v=myJson[k]
+    if(v<0):
+      myJson[k]=v+256
+  #print("\n\nEND convert_json\n",myJson)
+  return myJson
 
 def convert_grayscale(im):
+  #print("\n\nStart convert_grayscale\n",im)
   # Convert to grayscale if its a color image
   if len(im.shape) > 2 and im.shape[2]>2:
     red = im[:,:,0]
@@ -66,12 +38,16 @@ def convert_grayscale(im):
     blue = im[:,:,2]
     # Convert color to grayscale
     grayscale_image = (red * 0.299) + (green * 0.587) + (blue * 0.114)
+    #print("Image was converted from RGB")
   elif len(im.shape) == 2:
     grayscale_image = im
+    #print("Image was kept as-is")
+  #print("\n\nEND convert_grayscale",grayscale_image,"\n")
   return grayscale_image
 
 # This is a helper function to flatten image into a single row after downsampling the image to 28x28
 def flatten_784(grayscale_image):
+  #print("\n\nStart flatten\n",grayscale_image)
   # Find the width and length of the image
   num_rows_image = grayscale_image.shape[0]
   num_cols_image = grayscale_image.shape[1]
@@ -83,9 +59,44 @@ def flatten_784(grayscale_image):
   downsampled_image = grayscale_image[::downsample_rows,::downsample_cols]
   # Somtimes, the dimensions after downsampling are not accurate, pick the first 28 pixels in each direction
   downsampled_image = downsampled_image[0:28,0:28]
+  img=Image.fromarray(downsampled_image)
+  #st.text("Post-processing image")
+  #st.image(img)
   new_row = list(downsampled_image.reshape(1,784))
+  #print("\n\nEnd flatten\n",new_row)
   return new_row
 
+def get_prediction_data(data,url):
+  r = requests.post(url, data=json.dumps(data))
+  #print("Data AI input:",data)
+  response = getattr(r,'_content').decode("utf-8")
+  #print("Data AI predicts:",response)
+  return response
+
+def processFile(f,url):
+  print("Processing uploaded file with URL:",url)
+  bytesData=f.getvalue()
+  #st.text("Initial image")
+  st.image(f)
+  image=Image.open(f)
+  img_array=np.array(image)
+  grayscale_image=convert_grayscale(img_array)
+  final_image=flatten_784(grayscale_image)
+  json_data=convert_json(final_image)
+  #print("JSON data",json_data)
+  #st.title("Checking")
+  prediction=get_prediction_data(json_data,url)
+  print("\n\nData prediction",prediction)
+  st.text("Response:"+str(prediction))
+  predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
+  print("\n\nPredicted label", predicted_label)
+  st.title("AI says:"+str(predicted_label))
+
+#
+# Main code
+#
+np.set_printoptions(linewidth=200)
+version=" v 2.0"
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
 st.title("Image AI for Gateway"+version)
 url=st.text_input("URL",urlDefault)
