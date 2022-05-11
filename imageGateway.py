@@ -41,9 +41,10 @@ def processFile(f,url):
   img_array=np.array(image)
   grayscale_image=convert_grayscale(img_array)
   final_image=flatten_784(grayscale_image)
-  print("Final image",final_image)
+  json_data=convert_json(final_image)
+  print("JSON data",json_data)
   #st.title("Checking")
-  prediction=get_prediction_data(final_image,url)
+  prediction=get_prediction_data(json_data[0],url)
   print("\n\nData prediction",prediction)
   st.text("Response:"+str(prediction))
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
@@ -80,20 +81,8 @@ def flatten_784(grayscale_image):
   downsampled_image = grayscale_image[::downsample_rows,::downsample_cols]
   # Somtimes, the dimensions after downsampling are not accurate, pick the first 28 pixels in each direction
   downsampled_image = downsampled_image[0:28,0:28]
-  # Convert the vector to a list
-  list_image = list(downsampled_image.reshape(784,))
-  #From the list, create a dictionary
-  e=0
-  d={}
-  for i in range(1,29):
-    for j in range(1,29):
-      l=f"{i}x{j}"
-      #d[l]=e
-      d[l]=downsampled_image[i-1,j-1]
-      e=e+1
-  #return d
-  json_data = convert_json(list_image)
-  return json_data[0]
+  new_row = list(downsampled_image.reshape(1,784))
+  return new_row
 
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
 st.title("Image AI for Gateway")
