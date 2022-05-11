@@ -5,6 +5,18 @@ import json
 import numpy as np
 from PIL import Image
 
+def generate_column_names(resolution):
+    column_names = []
+    for a in range(1,resolution+1):
+        for b in range(1,resolution+1):
+            column_names.append(str(a)+'x' + str(b))
+    return column_names
+ 
+def convert_json(final_image):
+  new_df = pd.DataFrame(data=final_image,columns=generate_column_names(28))
+  json_file = new_df.to_dict('records')
+  return json_file
+
 def get_prediction_img(image_data):
   url = 'https://askai.aiclub.world/39a4f3a3-e637-4981-a88c-b2597ab12be0'
   r = requests.post(url, data=image_data)
@@ -78,7 +90,9 @@ def flatten_784(grayscale_image):
       #d[l]=e
       d[l]=downsampled_image[i-1,j-1]
       e=e+1
-  return d
+  #return d
+  json_data = convert_json(list_image)
+  return json_data[0]
 
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
 st.title("Image AI for Gateway")
