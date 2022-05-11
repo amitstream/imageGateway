@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
+version=" v 2.0"
+
 def generate_column_names(resolution):
     column_names = []
     for a in range(1,resolution+1):
@@ -85,7 +87,7 @@ def flatten_784(grayscale_image):
   return new_row
 
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
-st.title("Image AI for Gateway")
+st.title("Image AI for Gateway"+version)
 url=st.text_input("URL",urlDefault)
 uploadedFile=st.file_uploader("Choose file")
 if uploadedFile is not None:
