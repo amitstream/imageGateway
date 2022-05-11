@@ -3,6 +3,7 @@ import requests
 import base64
 import json
 import numpy as np
+import pandas as pd
 from PIL import Image
 
 def generate_column_names(resolution):
