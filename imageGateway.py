@@ -32,7 +32,7 @@ def processFile(f,url):
   #st.title("Checking")
   prediction=get_prediction_data(final_image,url)
   print("\n\nData prediction",prediction)
-  st.text("Response:",prediction)
+  st.text("Response:"+str(prediction))
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
   print("\n\nPredicted label", predicted_label)
   st.title("AI says:"+str(predicted_label))
