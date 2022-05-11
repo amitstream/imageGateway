@@ -75,7 +75,8 @@ def flatten_784(grayscale_image):
   for i in range(1,29):
     for j in range(1,29):
       l=f"{i}x{j}"
-      d[l]=e
+      #d[l]=e
+      d[l]=downsampled_image[i-1,j-1]
       e=e+1
   return d
 
