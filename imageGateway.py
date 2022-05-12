@@ -7,8 +7,8 @@ import pandas as pd
 from PIL import Image
 
 stTopTitle=st.empty()
-stTopUrl=st.empty()
-stFileChooser=st.empty()
+stTopUrl=st.sidebar.empty()
+stFileChooser=st.sidebar.empty()
 stImageDisplay=st.empty()
 stJsonDisplay=st.empty()
 stAIDisplay=st.empty()
@@ -95,7 +95,7 @@ def processFile(f,url,caption):
   #st_title("Checking")
   prediction=get_prediction_data(json_data,url)
   print("\n\nData prediction",prediction)
-  stJsonDisplay.text("Response:"+str(prediction))
+  stJsonDisplay.json(prediction)
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
   print("\n\nPredicted label", predicted_label)
   stAIDisplay.title("AI says:"+str(predicted_label))
