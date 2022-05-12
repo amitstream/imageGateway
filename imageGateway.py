@@ -5,7 +5,6 @@ import json
 import numpy as np
 import pandas as pd
 from PIL import Image
-from skimage.io import imread
 
 stTopTitle=st.empty()
 stTopUrl=st.empty()
