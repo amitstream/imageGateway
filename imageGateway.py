@@ -5,6 +5,14 @@ import json
 import numpy as np
 import pandas as pd
 from PIL import Image
+from skimage.io import imread
+
+stTopTitle=st.empty()
+stTopUrl=st.empty()
+stFileChooser=st.empty()
+stImageDisplay=st.empty()
+stJsonDisplay=st.empty()
+stAIDisplay=st.empty()
 
 
 def generate_column_names(resolution):
@@ -60,8 +68,8 @@ def flatten_784(grayscale_image):
   # Somtimes, the dimensions after downsampling are not accurate, pick the first 28 pixels in each direction
   downsampled_image = downsampled_image[0:28,0:28]
   img=Image.fromarray(downsampled_image)
-  #st.text("Post-processing image")
-  #st.image(img)
+  #st_text("Post-processing image")
+  #st_image(img)
   new_row = list(downsampled_image.reshape(1,784))
   #print("\n\nEnd flatten\n",new_row)
   return new_row
@@ -73,33 +81,42 @@ def get_prediction_data(data,url):
   #print("Data AI predicts:",response)
   return response
 
-def processFile(f,url):
+def processFile(f,url,caption):
   print("Processing uploaded file with URL:",url)
-  bytesData=f.getvalue()
-  #st.text("Initial image")
-  st.image(f)
+  #bytesData=f.getvalue()
+  #st_text("Initial image")
+  stImageDisplay.image(f,caption=caption)
+  print(f)
   image=Image.open(f)
   img_array=np.array(image)
   grayscale_image=convert_grayscale(img_array)
   final_image=flatten_784(grayscale_image)
   json_data=convert_json(final_image)
   #print("JSON data",json_data)
-  #st.title("Checking")
+  #st_title("Checking")
   prediction=get_prediction_data(json_data,url)
   print("\n\nData prediction",prediction)
-  st.text("Response:"+str(prediction))
+  stJsonDisplay.text("Response:"+str(prediction))
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
   print("\n\nPredicted label", predicted_label)
-  st.title("AI says:"+str(predicted_label))
+  stAIDisplay.title("AI says:"+str(predicted_label))
 
 #
 # Main code
 #
 np.set_printoptions(linewidth=200)
 version=" v 2.0"
+imlist=[]
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
-st.title("Image AI for Gateway"+version)
-url=st.text_input("URL",urlDefault)
-uploadedFile=st.file_uploader("Choose file")
+stTopTitle.title("Image AI for Gateway"+version)
+url=stTopUrl.text_input("URL",urlDefault)
+uploadedFile=stFileChooser.file_uploader("Choose file")
 if uploadedFile is not None:
-  processFile(uploadedFile,url)
+  processFile(uploadedFile,url,"File upload")
+  uploadedFile=None
+imagelist=[ "img/112.png", "img/90.png", "img/76.png", "img/110.png", "img/84.png", "img/61.png" ]
+with st.sidebar:
+  for idx,x in enumerate(imagelist):
+    msg=f"Image {idx+1}"
+    if st.button(msg):
+      processFile(imagelist[idx],url,msg)
