@@ -10,8 +10,10 @@ stTopTitle=st.empty()
 stTopUrl=st.sidebar.empty()
 stFileChooser=st.sidebar.empty()
 stImageDisplay=st.empty()
-stJsonDisplay=st.empty()
 stAIDisplay=st.empty()
+stJsonDisplay=st.empty()
+
+imagelist=[ "img/1.png", "img/6.png", "img/25.png", "img/90.png", "img/20.png", "img/35.png", "img/18.png", "img/15.png", "img/31.png", "img/22.png" ]
 
 
 def generate_column_names(resolution):
@@ -98,7 +100,7 @@ def processFile(f,url,caption):
   stJsonDisplay.json(prediction)
   predicted_label = json.loads(json.loads(prediction)['body'])['predicted_label']
   print("\n\nPredicted label", predicted_label)
-  stAIDisplay.title("AI says:"+str(predicted_label))
+  stAIDisplay.title("Prediction: "+str(predicted_label))
 
 #
 # Main code
@@ -107,15 +109,16 @@ np.set_printoptions(linewidth=200)
 version=" v 2.0"
 imlist=[]
 urlDefault = 'https://askai.aiclub.world/bc1fe184-efe3-4683-81f4-ededffb6c287'
-stTopTitle.title("Image AI for Gateway"+version)
+stTopTitle.title("Check your Image AI"+version)
 url=stTopUrl.text_input("URL",urlDefault)
 uploadedFile=stFileChooser.file_uploader("Choose file")
 if uploadedFile is not None:
   processFile(uploadedFile,url,"File upload")
   uploadedFile=None
-imagelist=[ "img/112.png", "img/90.png", "img/76.png", "img/110.png", "img/84.png", "img/61.png" ]
+#imagelist=[ "img/112.png", "img/90.png", "img/76.png", "img/110.png", "img/84.png", "img/61.png" ]
 with st.sidebar:
   for idx,x in enumerate(imagelist):
-    msg=f"Image {idx+1}"
+    cap=f"Label={idx}"
+    msg=f"Click for {idx}"
     if st.button(msg):
-      processFile(imagelist[idx],url,msg)
+      processFile(imagelist[idx],url,cap)
